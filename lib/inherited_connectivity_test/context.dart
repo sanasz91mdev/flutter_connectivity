@@ -1,12 +1,12 @@
+import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:async';
-
 
 class ConnectivityContext extends InheritedWidget {
   final String connectivity;
+  bool get showSnackBar => connectivity?.contains('none');
 
   ConnectivityContext._({
     @required this.connectivity,
@@ -15,7 +15,7 @@ class ConnectivityContext extends InheritedWidget {
   }) : super(key: key, child: child);
 
   static Widget around(Widget child, {Key key}) {
-    return ConnectivityWrapper(child:child,key: key);
+    return ConnectivityWrapper(child: child, key: key);
   }
 
   static ConnectivityContext of(BuildContext context) {
@@ -24,17 +24,14 @@ class ConnectivityContext extends InheritedWidget {
 
   @override
   bool updateShouldNotify(ConnectivityContext oldWidget) {
-      return connectivity!=oldWidget.connectivity;
+    return connectivity != oldWidget.connectivity;
   }
-
-
 }
 
 class ConnectivityWrapper extends StatefulWidget {
   final Widget child;
 
-  ConnectivityWrapper({Key key,this.child}) : super(key: key);
-
+  ConnectivityWrapper({Key key, this.child}) : super(key: key);
 
   @override
   _ConnectivityWrapperState createState() => new _ConnectivityWrapperState();
@@ -51,8 +48,8 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
-          setState(() => _connectionStatus = result.toString());
-        });
+      setState(() => _connectionStatus = result.toString());
+    });
   }
 
   @override
@@ -81,6 +78,9 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return ConnectivityContext._(connectivity: _connectionStatus,child: widget.child,);
+    return ConnectivityContext._(
+      connectivity: _connectionStatus,
+      child: widget.child,
+    );
   }
 }
